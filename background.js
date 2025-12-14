@@ -62,8 +62,7 @@ function copyToClipboard(text, tabId) {
         if (chrome.runtime.lastError || !results || !results[0] || results[0].result !== true) {
             showErrorToast(tabId);
         } else {
-            // Optional: Show success toast
-            // showSuccessToast(tabId);
+            showSuccessToast(tabId);
         }
     });
 }
@@ -74,5 +73,14 @@ function showErrorToast(tabId) {
         action: "showToast",
         message: "Failed to copy link to clipboard.",
         type: "error"
+    });
+}
+
+function showSuccessToast(tabId) {
+    console.log("Attempting to show success toast...");
+    chrome.tabs.sendMessage(tabId, {
+        action: "showToast",
+        message: "Link copied to clipboard!",
+        type: "success"
     });
 }
