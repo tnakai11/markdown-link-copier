@@ -7,15 +7,20 @@
     "contextMenus",
     "clipboardWrite",
     "scripting",
-    "activeTab"
+    "activeTab",
+    "notifications"
   ],
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ]
     }
   ],
   "icons": {

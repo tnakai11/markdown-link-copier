@@ -32,17 +32,15 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                     copyToClipboard(`[${text}](${linkUrl})`, tab.id);
                 });
             }
-        } else if (selectionText) {
-            // Just text selected, not a link context (but we allowed 'selection' context).
-            // If it's not a link, maybe we just ignore or copy as is? 
-            // The user specifically asked for "selected link".
-            // If they right click plain text, 'linkUrl' will be undefined.
-            // We can just do nothing or maybe treat it as a potential link if it looks like one?
-            // Let's stick to the requirement: "selected link".
-            // So if linkUrl is missing, we probably shouldn't do anything or maybe just copy the text.
-            // But the context menu says "Copy as Markdown".
-            // If I select text "foo" and right click, "Copy as Markdown" -> maybe nothing?
-            // Let's focus on the "link" context mainly.
+        } else {
+            // selectionText is present but linkUrl is missing (not a link).
+            // Show a notification to explain why it wasn't copied as a link.
+            chrome.notifications.create({
+                type: 'basic',
+                iconUrl: 'icons/icon48.png',
+                title: 'Markdown Link Copier',
+                message: 'No link detected in selection. Please right-click on a link.'
+            });
         }
     }
 });
@@ -52,12 +50,26 @@ function copyToClipboard(text, tabId) {
     chrome.scripting.executeScript({
         target: { tabId: tabId },
         func: (textToCopy) => {
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                console.log('Copied to clipboard:', textToCopy);
-            }).catch(err => {
-                console.error('Failed to copy:', err);
-            });
+            return navigator.clipboard.writeText(textToCopy)
+                .then(() => true)
+                .catch(err => {
+                    console.error('Failed to copy:', err);
+                    return false;
+                });
         },
         args: [text]
+    }, (results) => {
+        if (chrome.runtime.lastError || !results || !results[0] || results[0].result !== true) {
+            showErrorNotification();
+        }
+    });
+}
+
+function showErrorNotification() {
+    chrome.notifications.create({
+        type: 'basic',
+        iconUrl: 'icons/icon48.png',
+        title: 'Markdown Link Copier',
+        message: 'Failed to copy link to clipboard.'
     });
 }
