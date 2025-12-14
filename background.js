@@ -34,12 +34,12 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
             }
         } else {
             // selectionText is present but linkUrl is missing (not a link).
-            // Show a notification to explain why it wasn't copied as a link.
-            chrome.notifications.create({
-                type: 'basic',
-                iconUrl: 'icons/icon48.png',
-                title: 'Markdown Link Copier',
-                message: 'No link detected in selection. Please right-click on a link.'
+            // Show a toast to explain why it wasn't copied as a link.
+            console.log("Sending toast: No link detected.");
+            chrome.tabs.sendMessage(tab.id, {
+                action: "showToast",
+                message: "No link detected in selection. Please right-click on a link.",
+                type: "error"
             });
         }
     }
@@ -60,16 +60,19 @@ function copyToClipboard(text, tabId) {
         args: [text]
     }, (results) => {
         if (chrome.runtime.lastError || !results || !results[0] || results[0].result !== true) {
-            showErrorNotification();
+            showErrorToast(tabId);
+        } else {
+            // Optional: Show success toast
+            // showSuccessToast(tabId);
         }
     });
 }
 
-function showErrorNotification() {
-    chrome.notifications.create({
-        type: 'basic',
-        iconUrl: 'icons/icon48.png',
-        title: 'Markdown Link Copier',
-        message: 'Failed to copy link to clipboard.'
+function showErrorToast(tabId) {
+    console.log("Attempting to show error toast...");
+    chrome.tabs.sendMessage(tabId, {
+        action: "showToast",
+        message: "Failed to copy link to clipboard.",
+        type: "error"
     });
 }

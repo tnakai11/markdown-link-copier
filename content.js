@@ -23,5 +23,26 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             }
         }
         sendResponse({ text: text.trim() });
+    } else if (request.action === "showToast") {
+        showToast(request.message, request.type);
     }
 });
+
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `markdown-link-copier-toast ${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    // Trigger reflow
+    toast.offsetHeight;
+
+    toast.classList.add('show');
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            document.body.removeChild(toast);
+        }, 300);
+    }, 3000);
+}

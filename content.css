@@ -1,0 +1,29 @@
+.markdown-link-copier-toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #333;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 4px;
+    z-index: 2147483647;
+    /* Max z-index */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    pointer-events: none;
+}
+
+.markdown-link-copier-toast.show {
+    opacity: 1;
+}
+
+.markdown-link-copier-toast.error {
+    background-color: #d32f2f;
+}
+
+.markdown-link-copier-toast.success {
+    background-color: #4caf50;
+}
